@@ -1,0 +1,19 @@
+# Secrets
+.env
+*.pem
+*.key
+auth.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Hermes specific
+*.log
+*.env.bak
