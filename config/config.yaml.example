@@ -1,0 +1,39 @@
+# config.yaml — Hermes Agent Configuration Template
+# Copy to ~/.hermes/profiles/bruno/config.yaml and customize
+
+model:
+  default: deepseek-v4-flash
+  provider: deepseek
+
+fallback_providers:
+  - provider: openrouter
+    model: deepseek/deepseek-chat
+
+agent:
+  max_turns: 200
+  reasoning_effort: medium
+
+terminal:
+  backend: local
+  timeout: 300
+
+memory:
+  memory_enabled: true
+  provider: hindsight
+  memory_char_limit: 2200
+  user_char_limit: 1375
+
+display:
+  language: pt-br
+  interface: cli
+
+approvals:
+  mode: smart
+  timeout: 300
+
+delegation:
+  max_concurrent_children: 3
+  max_spawn_depth: 1
+
+web:
+  backend: firecrawl

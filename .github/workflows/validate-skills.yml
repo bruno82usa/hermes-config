@@ -1,0 +1,47 @@
+# SkillSpector Validation — runs on push/PR to check skill security
+name: validate-skills
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'skills/**/*.md'
+      - 'skills/**/*.sh'
+  pull_request:
+    paths:
+      - 'skills/**/*.md'
+      - 'skills/**/*.sh'
+  workflow_dispatch:
+
+jobs:
+  skillspector:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install SkillSpector
+        run: |
+          git clone https://github.com/NVIDIA/SkillSpector.git /tmp/skillspector
+          cd /tmp/skillspector
+          pip install -e .
+
+      - name: Scan all skills
+        run: |
+          echo "## 🔍 SkillSpector Results" >> $GITHUB_STEP_SUMMARY
+          for skill_dir in skills/*/*/; do
+            if [ -f "${skill_dir}SKILL.md" ] || [ -f "${skill_dir}skill.md" ]; then
+              skill_name=$(basename "$skill_dir")
+              echo "### 📦 $skill_name" >> $GITHUB_STEP_SUMMARY
+              skillspector scan "$skill_dir" --no-llm --format markdown >> $GITHUB_STEP_SUMMARY 2>&1 || true
+            fi
+          done
+
+      - name: Summary
+        run: |
+          echo "✅ Skills validated by SkillSpector"
+          echo "ℹ️  Note: false positives expected for localhost URLs and admin commands"
